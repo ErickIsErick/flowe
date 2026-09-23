@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>Para ti 🌻</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Pantalla inicial: necesaria para permitir audio con interacción del usuario -->
+  <div id="intro-screen">
+    <p id="intro-text">Tengo algo para ti mi amor ❤️</p>
+    <button id="open-btn">Abrir 🌻</button>
+  </div>
+
+  <!-- Escenario principal -->
+  <main id="stage" aria-hidden="true">
+    <canvas id="particles-canvas"></canvas>
+    <svg id="flowers-svg" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="petalGradA" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#e07c00"/>
+          <stop offset="45%" stop-color="#ffb627"/>
+          <stop offset="100%" stop-color="#fff1b8"/>
+        </linearGradient>
+        <linearGradient id="petalGradB" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#d16f00"/>
+          <stop offset="50%" stop-color="#ffc93c"/>
+          <stop offset="100%" stop-color="#ffe6a3"/>
+        </linearGradient>
+        <linearGradient id="petalGradC" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#c96500"/>
+          <stop offset="50%" stop-color="#f4a300"/>
+          <stop offset="100%" stop-color="#ffd66b"/>
+        </linearGradient>
+        <radialGradient id="centerGrad" cx="42%" cy="38%" r="68%">
+          <stop offset="0%" stop-color="#6b4318"/>
+          <stop offset="55%" stop-color="#3d2409"/>
+          <stop offset="100%" stop-color="#201203"/>
+        </radialGradient>
+        <pattern id="seedPattern" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+          <circle cx="4" cy="4" r="1.2" fill="#140b02" opacity="0.6"/>
+        </pattern>
+      </defs>
+      <g id="flowers-container"></g>
+    </svg>
+
+    <div id="message-container">
+      <p class="message-line" id="line1">Para la flor más bonita de mi vida 🌻❤️</p>
+      <p class="message-line" id="line2">Te amo mucho Krissel, mi vida, mi niña, mi amor, mi postresito de cafe quemado.</p>
+    </div>
+
+    <button id="replay-btn" title="Repetir animación">↺</button>
+  </main>
+
+  <audio id="bg-audio" loop preload="none">
+    <source src="assets/audio/romantic.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>

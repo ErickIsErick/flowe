@@ -1,0 +1,253 @@
+/* =========================================================
+   Variables de color — cámbialas aquí para personalizar
+   ========================================================= */
+:root {
+  --bg-color: #000000;
+  --petal-yellow-1: #ffd23f;
+  --petal-yellow-2: #ffb703;
+  --petal-yellow-3: #f4a300;
+  --flower-center: #4a2e05;
+  --flower-center-dark: #2b1a03;
+  --leaf-green: #6b8e23;
+  --leaf-green-dark: #3f5714;
+  --outline-color: #1a0f00;
+  --gold-particle: #ffdd7a;
+  --text-color: #ffe9b8;
+  --font-romantic: 'Great Vibes', 'Brush Script MT', cursive;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100dvh;
+  background: var(--bg-color);
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  font-family: var(--font-serif);
+}
+
+/* ===================== Pantalla inicial ===================== */
+#intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: var(--bg-color);
+  padding: env(safe-area-inset-top, 0) 24px env(safe-area-inset-bottom, 0);
+  text-align: center;
+}
+
+#intro-text {
+  color: var(--text-color);
+  font-size: clamp(22px, 6vw, 32px);
+  font-family: var(--font-serif);
+  font-style: italic;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  animation: fadeIn 1.4s ease forwards 0.3s;
+}
+
+#open-btn {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: #1a0f00;
+  background: linear-gradient(180deg, var(--petal-yellow-1), var(--petal-yellow-3));
+  border: none;
+  padding: 14px 32px;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 210, 63, 0.4);
+  opacity: 0;
+  animation: fadeIn 1.4s ease forwards 1s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#open-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 10px rgba(255, 210, 63, 0.6);
+}
+
+#intro-screen.hidden {
+  animation: fadeOutIntro 0.8s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes fadeOutIntro {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* ===================== Escenario principal ===================== */
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  background: var(--bg-color);
+  overflow: hidden;
+}
+
+#particles-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+#flowers-svg {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(100%, 520px);
+  height: 85%;
+  z-index: 2;
+  overflow: visible;
+}
+
+/* ===================== Mensaje romántico ===================== */
+#message-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  pointer-events: none;
+}
+
+.message-line {
+  color: var(--text-color);
+  text-align: center;
+  opacity: 0;
+  text-shadow: 0 0 12px rgba(255, 210, 63, 0.35);
+}
+
+#line1 {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(16px, 4.5vw, 22px);
+}
+
+#line2 {
+  font-family: var(--font-romantic);
+  font-size: clamp(32px, 10vw, 52px);
+}
+
+.message-line.show {
+  animation: fadeInMsg 2s ease forwards;
+}
+
+@keyframes fadeInMsg {
+  to { opacity: 1; }
+}
+
+/* ===================== Botón repetir ===================== */
+#replay-btn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  right: 16px;
+  z-index: 4;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 210, 63, 0.4);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--petal-yellow-1);
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#replay-btn.visible {
+  opacity: 0.8;
+}
+
+/* ===================== Elementos SVG de flores ===================== */
+/* El transform-origin de .leaf y .flower-group se define por
+   JavaScript en coordenadas absolutas del viewBox, así que dejamos la
+   caja de referencia por defecto (view-box) en vez de fill-box. */
+.leaf,
+.flower-group {
+  transform-origin: 0 0;
+}
+
+/* -----------------------------------------------------------
+   Pétalos: la posición/rotación fijas viven en el atributo SVG
+   "transform" del <g> que envuelve a cada pétalo (barato, no se
+   anima). Lo único que se anima aquí es opacity + scale mediante
+   una animación CSS con animation-delay individual por pétalo —
+   así el navegador calcula el escalonado él mismo en un solo hilo
+   de composición, en lugar de que JavaScript reprograme el estilo
+   de cada pétalo con setTimeout (eso era lo que se sentía con
+   "lag" al abrirse las flores).
+   ----------------------------------------------------------- */
+.petal {
+  opacity: 0;
+  transform: scale(0.15);
+  transform-origin: 0 0;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+.petal.will-open {
+  animation: petalOpen 0.7s cubic-bezier(0.33, 1.15, 0.6, 1) forwards;
+}
+
+@keyframes petalOpen {
+  from { opacity: 0; transform: scale(0.15); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ===================== Corazones de interacción ===================== */
+.tap-heart {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  font-size: 20px;
+  color: #ff6b9d;
+  text-shadow: 0 0 8px rgba(255, 107, 157, 0.6);
+  animation: heartFloat 1.2s ease-out forwards;
+}
+
+@keyframes heartFloat {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, calc(-50% - 70px)) scale(1.1); }
+}
+
+/* ===================== Responsive ===================== */
+@media (min-width: 700px) {
+  #flowers-svg {
+    height: 80%;
+  }
+}
+
+@media (max-height: 600px) {
+  #message-container {
+    bottom: 4%;
+  }
+  #flowers-svg {
+    height: 78%;
+  }
+}
